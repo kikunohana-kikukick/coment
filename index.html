@@ -3,35 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hash Display</title>
+    <title>Dynamic Hash Styles</title>
     <style>
         body {
+            margin: 0;
+            overflow: hidden;
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+            color: white;
         }
-        h1 {
-            color: #333;
+
+        #displayText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            white-space: nowrap;
+        }
+
+        /* Style 1: Moody */
+        .style1 {
+            background: linear-gradient(to bottom, #ff4e50, #fc913a);
+        }
+
+        .style1 #displayText {
+            animation: rotateText 3s infinite;
+        }
+
+        @keyframes rotateText {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(10deg); }
+        }
+
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: red;
+            transform: rotate(45deg);
+            animation: floatHeart 4s infinite;
+        }
+
+        .heart:before, .heart:after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+        }
+
+        .heart:before { top: -10px; left: 0; }
+        .heart:after { left: -10px; top: 0; }
+
+        @keyframes floatHeart {
+            0% { transform: rotate(45deg) translateY(0); opacity: 1; }
+            100% { transform: rotate(45deg) translateY(-100px); opacity: 0; }
+        }
+
+        /* Style 2: Cool */
+        .style2 {
+            background: linear-gradient(to bottom, #1e3c72, #2a5298);
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatShape 4s infinite;
+        }
+
+        .shape.square { border-radius: 0; }
+
+        @keyframes floatShape {
+            0% { transform: translateY(0) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-200px) scale(0.5); opacity: 0; }
+        }
+
+        /* Style 3: Hacker */
+        .style3 {
+            background: black;
+            color: green;
+            font-family: 'Courier New', monospace;
+        }
+
+        .pixel-effect {
+            position: absolute;
+            font-size: 12px;
+            color: green;
+            animation: fadePixel 2s infinite;
+        }
+
+        @keyframes fadePixel {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(50px); }
         }
     </style>
 </head>
 <body>
-    <h1>Hash Display</h1>
-    <p>下のテキストはURLのハッシュ部分が表示されます。</p>
-    <div id="hashText" style="font-size: 24px; color: blue;">#ここにハッシュが表示されます</div>
+    <div id="displayText"></div>
 
     <script>
-        // ハッシュを表示する関数
         function displayHash() {
-            const hash = window.location.hash.slice(1); // "#"を除去
-            const hashText = hash || "ここにハッシュを入力してください";
-            document.getElementById("hashText").textContent = hashText;
+            const hash = window.location.hash.slice(1); // ハッシュ文字列を取得（#を除外）
+            const [text, style] = hash.split('/'); // ハッシュを分割（例: #text/style）
+            const displayText = document.getElementById("displayText");
+            document.body.className = ''; // スタイルをリセット
+
+            // テキスト表示
+            displayText.textContent = text || "テキストを入力してください";
+
+            // スタイル適用
+            if (style === "style1") applyStyle1();
+            else if (style === "style2") applyStyle2();
+            else if (style === "style3") applyStyle3();
+            else document.body.className = ''; // デフォルト
         }
 
-        // ページ読み込み時にハッシュを表示
-        displayHash();
+        function applyStyle1() {
+            document.body.className = 'style1';
+            createHearts();
+        }
 
-        // ハッシュが変更されたときに更新
+        function applyStyle2() {
+            document.body.className = 'style2';
+            createShapes();
+        }
+
+        function applyStyle3() {
+            document.body.className = 'style3';
+            createPixels();
+        }
+
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 4000);
+            }, 500);
+        }
+
+        function createShapes() {
+            setInterval(() => {
+                const shape = document.createElement('div');
+                shape.className = 'shape ' + (Math.random() > 0.5 ? 'square' : '');
+                shape.style.left = Math.random() * window.innerWidth + 'px';
+                shape.style.top = Math.random() * window.innerHeight + 'px';
+                shape.style.width = shape.style.height = Math.random() * 50 + 'px';
+                document.body.appendChild(shape);
+                setTimeout(() => shape.remove(), 4000);
+            }, 500);
+        }
+
+        function createPixels() {
+            setInterval(() => {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel-effect';
+                pixel.textContent = Math.random() > 0.5 ? '0' : '1';
+                pixel.style.left = Math.random() * window.innerWidth + 'px';
+                pixel.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(pixel);
+                setTimeout(() => pixel.remove(), 2000);
+            }, 100);
+        }
+
+        // 初期表示とハッシュ変更時の更新
+        displayHash();
         window.addEventListener("hashchange", displayHash);
     </script>
 </body>
