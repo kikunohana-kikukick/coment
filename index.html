@@ -15,7 +15,7 @@
 
         #displayText {
             position: absolute;
-            top: 50%;
+            top: 40%; /* 文字の位置を調整 */
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 48px;
@@ -136,22 +136,22 @@
 
         function applyStyle1() {
             document.body.className = 'style1';
-            for (let i = 0; i < 30; i++) {
-                activeEffects.push(setInterval(createHeart, 300));
+            for (let i = 0; i < 15; i++) { // エフェクト量を減らす
+                activeEffects.push(setInterval(createHeart, 400));
             }
         }
 
         function applyStyle2() {
             document.body.className = 'style2';
-            for (let i = 0; i < 30; i++) {
-                activeEffects.push(setInterval(createShape, 300));
+            for (let i = 0; i < 15; i++) { // エフェクト量を減らす
+                activeEffects.push(setInterval(createShape, 400));
             }
         }
 
         function applyStyle3() {
             document.body.className = 'style3';
-            for (let i = 0; i < 100; i++) {
-                activeEffects.push(setInterval(createPixel, 100));
+            for (let i = 0; i < 50; i++) { // エフェクト量を減らす
+                activeEffects.push(setInterval(createPixel, 200));
             }
         }
 
