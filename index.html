@@ -10,6 +10,7 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
             color: white;
+            position: relative;
         }
 
         #displayText {
@@ -19,6 +20,12 @@
             transform: translate(-50%, -50%);
             font-size: 48px;
             white-space: nowrap;
+            text-align: center;
+        }
+
+        /* 共通のリセットスタイル */
+        .reset {
+            background: none;
         }
 
         /* Style 1: Moody */
@@ -41,7 +48,7 @@
             height: 20px;
             background: red;
             transform: rotate(45deg);
-            animation: floatHeart 4s infinite;
+            animation: floatHeart 4s infinite ease-out;
         }
 
         .heart:before, .heart:after {
@@ -58,7 +65,7 @@
 
         @keyframes floatHeart {
             0% { transform: rotate(45deg) translateY(0); opacity: 1; }
-            100% { transform: rotate(45deg) translateY(-100px); opacity: 0; }
+            100% { transform: rotate(45deg) translateY(-150px); opacity: 0; }
         }
 
         /* Style 2: Cool */
@@ -104,70 +111,76 @@
     <div id="displayText"></div>
 
     <script>
+        let activeEffects = [];
+
         function displayHash() {
-            const hash = window.location.hash.slice(1); // ハッシュ文字列を取得（#を除外）
+            // ハッシュの取得と分割
+            const hash = window.location.hash.slice(1); // #を除去
             const [text, style] = hash.split('/'); // ハッシュを分割（例: #text/style）
             const displayText = document.getElementById("displayText");
-            document.body.className = ''; // スタイルをリセット
 
-            // テキスト表示
+            // スタイルをリセット
+            document.body.className = 'reset';
+            activeEffects.forEach(effect => clearInterval(effect));
+            activeEffects = [];
+
+            // テキスト更新
             displayText.textContent = text || "テキストを入力してください";
 
-            // スタイル適用
+            // スタイルの選択
             if (style === "style1") applyStyle1();
             else if (style === "style2") applyStyle2();
             else if (style === "style3") applyStyle3();
-            else document.body.className = ''; // デフォルト
         }
 
         function applyStyle1() {
             document.body.className = 'style1';
-            createHearts();
+            for (let i = 0; i < 20; i++) {
+                activeEffects.push(setInterval(createHeart, 500));
+            }
         }
 
         function applyStyle2() {
             document.body.className = 'style2';
-            createShapes();
+            for (let i = 0; i < 20; i++) {
+                activeEffects.push(setInterval(createShape, 500));
+            }
         }
 
         function applyStyle3() {
             document.body.className = 'style3';
-            createPixels();
+            for (let i = 0; i < 50; i++) {
+                activeEffects.push(setInterval(createPixel, 200));
+            }
         }
 
-        function createHearts() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.style.left = Math.random() * window.innerWidth + 'px';
-                heart.style.top = Math.random() * window.innerHeight + 'px';
-                document.body.appendChild(heart);
-                setTimeout(() => heart.remove(), 4000);
-            }, 500);
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
         }
 
-        function createShapes() {
-            setInterval(() => {
-                const shape = document.createElement('div');
-                shape.className = 'shape ' + (Math.random() > 0.5 ? 'square' : '');
-                shape.style.left = Math.random() * window.innerWidth + 'px';
-                shape.style.top = Math.random() * window.innerHeight + 'px';
-                shape.style.width = shape.style.height = Math.random() * 50 + 'px';
-                document.body.appendChild(shape);
-                setTimeout(() => shape.remove(), 4000);
-            }, 500);
+        function createShape() {
+            const shape = document.createElement('div');
+            shape.className = 'shape ' + (Math.random() > 0.5 ? 'square' : '');
+            shape.style.left = Math.random() * window.innerWidth + 'px';
+            shape.style.top = window.innerHeight + 'px';
+            shape.style.width = shape.style.height = Math.random() * 100 + 'px';
+            document.body.appendChild(shape);
+            setTimeout(() => shape.remove(), 4000);
         }
 
-        function createPixels() {
-            setInterval(() => {
-                const pixel = document.createElement('div');
-                pixel.className = 'pixel-effect';
-                pixel.textContent = Math.random() > 0.5 ? '0' : '1';
-                pixel.style.left = Math.random() * window.innerWidth + 'px';
-                pixel.style.top = Math.random() * window.innerHeight + 'px';
-                document.body.appendChild(pixel);
-                setTimeout(() => pixel.remove(), 2000);
-            }, 100);
+        function createPixel() {
+            const pixel = document.createElement('div');
+            pixel.className = 'pixel-effect';
+            pixel.textContent = Math.random() > 0.5 ? '0' : '1';
+            pixel.style.left = Math.random() * window.innerWidth + 'px';
+            pixel.style.top = '0px';
+            document.body.appendChild(pixel);
+            setTimeout(() => pixel.remove(), 2000);
         }
 
         // 初期表示とハッシュ変更時の更新
